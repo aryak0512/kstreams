@@ -8,8 +8,8 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.aryak.kstreams.producer.ProducerUtil.publishMessageSync;
 import static com.aryak.kstreams.util.Constants.GREETINGS;
+import static com.aryak.kstreams.util.ProducerUtil.publishMessageSync;
 
 
 @Slf4j

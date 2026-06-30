@@ -1,7 +1,7 @@
 package com.aryak.kstreams.config;
 
 import com.aryak.kstreams.domain.Greeting;
-import com.aryak.kstreams.serdes.GreetingSerde;
+import com.aryak.kstreams.util.SerdeFactory;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.Topology;
@@ -23,14 +23,14 @@ public class TopologyConfig {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
 
         // read
-        KStream<String, Greeting> sourceStream = streamsBuilder.stream(GREETINGS, Consumed.with(Serdes.String(), new GreetingSerde()));
+        KStream<String, Greeting> sourceStream = streamsBuilder.stream(GREETINGS, Consumed.with(Serdes.String(), SerdeFactory.get(Greeting.class)));
 
         // process
         KStream<String, Greeting> modifiedStream = sourceStream
                 .mapValues((k, v) -> new Greeting(v.getMessage().toUpperCase(), v.getInstant()));
 
         // write
-        modifiedStream.to(GREETINGS_UPPERCASE, Produced.with(Serdes.String(), new GreetingSerde()));
+        modifiedStream.to(GREETINGS_UPPERCASE, Produced.with(Serdes.String(), SerdeFactory.get(Greeting.class)));
 
         return streamsBuilder.build();
     }
