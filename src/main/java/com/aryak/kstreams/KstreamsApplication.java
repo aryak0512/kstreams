@@ -1,5 +1,6 @@
 package com.aryak.kstreams;
 
+import com.aryak.kstreams.producer.GreetingsMockDataProducer;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -10,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Properties;
@@ -19,10 +21,11 @@ import java.util.concurrent.ExecutionException;
 public class KstreamsApplication {
 
     private static final String BOOTSTRAP_SERVERS = "localhost:9092";
-
+    private final ObjectMapper objectMapper;
     private final Topology topology;
 
-    public KstreamsApplication(final Topology topology) {
+    public KstreamsApplication(final ObjectMapper objectMapper, final Topology topology) {
+        this.objectMapper = objectMapper;
         this.topology = topology;
     }
 
@@ -39,6 +42,10 @@ public class KstreamsApplication {
             adminProps.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
 
             //createTopics(adminProps);
+
+            // produce messages
+            GreetingsMockDataProducer.englishGreetings(objectMapper);
+            GreetingsMockDataProducer.spanishGreetings(objectMapper);
 
             Properties props = new Properties();
             props.setProperty(StreamsConfig.APPLICATION_ID_CONFIG, "app-id");

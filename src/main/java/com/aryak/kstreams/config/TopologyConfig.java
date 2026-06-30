@@ -11,26 +11,26 @@ import org.apache.kafka.streams.kstream.Produced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.aryak.kstreams.util.Constants.GREETINGS;
+import static com.aryak.kstreams.util.Constants.GREETINGS_UPPERCASE;
+
 @Configuration
 public class TopologyConfig {
 
-    private static final String sourceTopic = "greetings";
-
-    private static final String destinationTopic = "greetings_uppercase";
 
     @Bean
     public Topology buildTopology() {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
 
         // read
-        KStream<Integer, Greeting> sourceStream = streamsBuilder.stream(sourceTopic, Consumed.with(Serdes.Integer(), new GreetingSerde()));
+        KStream<String, Greeting> sourceStream = streamsBuilder.stream(GREETINGS, Consumed.with(Serdes.String(), new GreetingSerde()));
 
         // process
-        KStream<Integer, Greeting> modifiedStream = sourceStream
+        KStream<String, Greeting> modifiedStream = sourceStream
                 .mapValues((k, v) -> new Greeting(v.getMessage().toUpperCase(), v.getInstant()));
 
         // write
-        modifiedStream.to(destinationTopic, Produced.with(Serdes.Integer(), new GreetingSerde()));
+        modifiedStream.to(GREETINGS_UPPERCASE, Produced.with(Serdes.String(), new GreetingSerde()));
 
         return streamsBuilder.build();
     }
